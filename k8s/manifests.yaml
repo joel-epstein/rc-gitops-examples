@@ -23,7 +23,6 @@ spec:
         - name: sidecar
           image: quay.io/greymatterio/gm-proxy:1.7.1
           imagePullPolicy: Always
-          name: sidecar
           ports:
           - containerPort: 10809
             name: proxy
@@ -47,14 +46,6 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
-          volumeMounts:
-            - name: tls-certs
-              mountPath: /etc/proxy/tls/sidecar
-      volumes:
-        - name: tls-certs
-          secret:
-            defaultMode: 420
-            secretName: greymatter-grocerylist-edge-certs
       imagePullSecrets:
       - name: gm-docker-secret
 ---
