@@ -1,0 +1,226 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: examples
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-grocerylist
+  namespace: examples
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      greymatter.io/cluster: edge-grocerylist
+  template:
+    metadata:
+      labels:
+        greymatter.io/cluster: edge-grocerylist
+    spec:
+      containers:
+        - name: sidecar
+          image: quay.io/greymatterio/gm-proxy:1.7.1
+          imagePullPolicy: Always
+          name: sidecar
+          ports:
+          - containerPort: 10809
+            name: proxy
+          env:
+            - name: XDS_CLUSTER
+              value: edge-grocerylist
+            - name: ENVOY_ADMIN_LOG_PATH
+              value: /dev/stdout
+            - name: PROXY_DYNAMIC
+              value: "true"
+            - name: XDS_ZONE
+              value: default-zone
+            - name: XDS_HOST
+              value: controlensemble.greymatter.svc.cluster.local
+            - name: XDS_PORT
+              value: "50000"
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: tls-certs
+              mountPath: /etc/proxy/tls/sidecar
+      volumes:
+        - name: tls-certs
+          secret:
+            defaultMode: 420
+            secretName: greymatter-grocerylist-edge-certs
+      imagePullSecrets:
+      - name: gm-docker-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-grocerylist
+  namespace: examples
+spec:
+  ports:
+  - name: ingress
+    port: 10809
+    protocol: TCP
+    targetPort: 10809
+  selector:
+    greymatter.io/cluster: edge-grocerylist
+  type: LoadBalancer
+
+---
+apiVersion: v1
+data:
+  index.html: I'm an API in the greymatter.io mesh!
+kind: ConfigMap
+metadata:
+  name: apple-web
+  namespace: examples
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apple
+  namespace: examples
+  annotations:
+    greymatter.io/inject-sidecar-to: "8080"
+spec:
+  selector:
+    matchLabels:
+      app: apple
+  template:
+    metadata:
+      labels:
+        app: apple
+    spec:
+      containers:
+        - name: apple
+          image: python:3
+          command: ["python"]
+          args: ["-m", "http.server", "8080", "--directory", "web"]
+          volumeMounts:
+            - name: web-volume
+              mountPath: /web
+      volumes:
+        - name: web-volume
+          configMap:
+            name: apple-web
+
+---
+apiVersion: v1
+data:
+  index.html: I'm an API in the greymatter.io mesh!
+kind: ConfigMap
+metadata:
+  name: banana-web
+  namespace: examples
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: banana
+  namespace: examples
+  annotations:
+    greymatter.io/inject-sidecar-to: "8080"
+spec:
+  selector:
+    matchLabels:
+      app: banana
+  template:
+    metadata:
+      labels:
+        app: banana
+    spec:
+      containers:
+        - name: banana
+          image: python:3
+          command: ["python"]
+          args: ["-m", "http.server", "8080", "--directory", "web"]
+          volumeMounts:
+            - name: web-volume
+              mountPath: /web
+      volumes:
+        - name: web-volume
+          configMap:
+            name: banana-web
+
+---
+apiVersion: v1
+data:
+  index.html: I'm an API in the greymatter.io mesh!
+kind: ConfigMap
+metadata:
+  name: lettuce-web
+  namespace: examples
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lettuce
+  namespace: examples
+  annotations:
+    greymatter.io/inject-sidecar-to: "8080"
+spec:
+  selector:
+    matchLabels:
+      app: lettuce
+  template:
+    metadata:
+      labels:
+        app: lettuce
+    spec:
+      containers:
+        - name: lettuce
+          image: python:3
+          command: ["python"]
+          args: ["-m", "http.server", "8080", "--directory", "web"]
+          volumeMounts:
+            - name: web-volume
+              mountPath: /web
+      volumes:
+        - name: web-volume
+          configMap:
+            name: lettuce-web
+
+---
+apiVersion: v1
+data:
+  index.html: I'm an API in the greymatter.io mesh!
+kind: ConfigMap
+metadata:
+  name: tomato-web
+  namespace: examples
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomato
+  namespace: examples
+  annotations:
+    greymatter.io/inject-sidecar-to: "8080"
+spec:
+  selector:
+    matchLabels:
+      app: tomato
+  template:
+    metadata:
+      labels:
+        app: tomato
+    spec:
+      containers:
+        - name: tomato
+          image: python:3
+          command: ["python"]
+          args: ["-m", "http.server", "8080", "--directory", "web"]
+          volumeMounts:
+            - name: web-volume
+              mountPath: /web
+      volumes:
+        - name: web-volume
+          configMap:
+            name: tomato-web

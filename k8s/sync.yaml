@@ -1,0 +1,75 @@
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: 
+  name: greymatter-sync
+  namespace: greymatter
+spec:
+  selector:
+    matchLabels:
+      app: greymatter-sync
+  serviceName: "greymatter-sync"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: greymatter-sync
+    spec:
+      terminationGracePeriodSeconds: 10
+      imagePullSecrets:
+      - name: gm-docker-secret
+      volumes:
+      - name: ssh-private-key
+        secret:
+          secretName: greymatter-sync-secret
+      containers:
+      - name: greymatter-sync
+        image: quay.io/greymatterio/cli:4.3.0
+        imagePullPolicy: Always
+        command: ["/usr/local/bin/greymatter"]
+        args: [
+          "-c", "/etc/greymatter/config.toml", 
+          "--api", "http://controlensemble.greymatter.svc.cluster.local:5555", 
+          "--catalog", "http://catalog.greymatter.svc.cluster.local:8080", 
+          "sync", 
+          "--ssh-private-key", "/var/lib/greymatter/.ssh/ssh-private-key", 
+          "--git", "--forever", 
+          "--branch", "main",
+          "--interval", "10s", 
+          "--git-dir", "/var/lib/greymatter/checkout", 
+          "-e", "configs",
+          "--redis-addr", "redis.greymatter.svc.cluster.local:6379",
+          "--redis-passphrase", "",
+          "--redis-username", "",
+          "--redis-db", "0"
+        ]
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "512Mi"
+          requests:
+            cpu: "50m"
+            memory: "128Mi"
+        volumeMounts:
+        - name: ssh-private-key
+          readOnly: true
+          mountPath: "/var/lib/greymatter/.ssh"
+        env:
+        - name: SSH_KNOWN_HOSTS
+          value: "/tmp/known_hosts"
+        - name: GREYMATTER_GIT_REMOTE
+          valueFrom:
+            configMapKeyRef:
+              name: greymatter-sync-config
+              key: GREYMATTER_GIT_REMOTE
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: greymatter-sync-config
+  namespace: greymatter
+data:
+  # property-like keys; each key maps to a simple value
+  GREYMATTER_GIT_REMOTE: ""
