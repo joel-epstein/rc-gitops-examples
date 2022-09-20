@@ -6,7 +6,7 @@ config: {
 
 mesh: {
 	metadata: {
-		name: string | *"greymatter-mesh"
+		name: string | *"greymatter-mesh-foobar"
 	}
 }
 
