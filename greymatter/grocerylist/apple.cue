@@ -63,7 +63,7 @@ Apple: {
 			
 		},
 		#route & {
-			domain_key: "edge"
+			domain_key: defaults.edge.key
 			route_key:  Name
 			route_match: {
 				path: "/services/grocerylist/apple/"
