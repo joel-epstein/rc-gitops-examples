@@ -6,7 +6,7 @@ config: {
 
 mesh: {
 	metadata: {
-		name: string | *"greymatter-mesh-foobar"
+		name: string | *"greymatter-mesh"
 	}
 }
 
@@ -36,7 +36,7 @@ defaults: {
 		// - different environments/infra may require different config.
 		// This can be retrieved on kubernetes by running:
 		// kubectl get svc edge-grocerylist -n $MY_NAMESPACE
-		endpoint: "a292330d87bc34189b33f398256303fb-1006541573.us-east-1.elb.amazonaws.com:10809"
+		endpoint: ""
 		
 		// OIDC block
 		oidc: {
