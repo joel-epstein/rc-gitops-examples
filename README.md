@@ -109,6 +109,7 @@ Make sure to apply the starter k8s manifests in the `./k8s` folder.
 kubectl apply -f ./k8s/manifests.yaml -n $MY_NAMESPACE # this file contains your project edge
 kubectl apply -f ./k8s/sync.yaml -n $MY_NAMESPACE # this deploys the greymatter.io sync service
 ```
+blah blah
 
 ### Deployment
 
