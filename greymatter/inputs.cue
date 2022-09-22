@@ -36,7 +36,7 @@ defaults: {
 		// - different environments/infra may require different config.
 		// This can be retrieved on kubernetes by running:
 		// kubectl get svc edge-grocerylist -n $MY_NAMESPACE
-		endpoint: "acc3e219a4a5b4a67b8e2edc2f820769-930190889.us-east-1.elb.amazonaws.com:10809"
+		endpoint: "a5bb9cf13ba344b6f9a4be38e02ac796-1920399199.us-east-1.elb.amazonaws.com:10809"
 		
 		// OIDC block
 		oidc: {
