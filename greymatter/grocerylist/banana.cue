@@ -84,7 +84,7 @@ Banana: {
 			mesh_id:                   mesh.metadata.name
 			service_id:                Name
 			version:                   "v1.0.0"
-			description:               "EDIT ME: service description goes here"
+			description:               "EDIT ME: Wait there's more...  GitOps"
 			
 			api_endpoint:              "http://\(defaults.edge.endpoint)/services/grocerylist/\(Name)/"
 			api_spec_endpoint:         "http://\(defaults.edge.endpoint)/services/grocerylist/\(Name)/"
